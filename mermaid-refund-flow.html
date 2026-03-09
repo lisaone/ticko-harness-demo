@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticko Harness Refund Flow</title>
+  <style>
+    :root {
+      color-scheme: light;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f7fb;
+      color: #111827;
+    }
+    .wrap {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      overflow: auto;
+    }
+    h1 {
+      margin: 0 0 16px;
+      font-size: 20px;
+    }
+    .mermaid {
+      min-width: 1400px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Ticko Harness Refund Flow</h1>
+    <div class="card">
+      <pre class="mermaid">
+flowchart TD
+    A[用户发起退款] --> B[Ticko Harness 启动任务 runtime]
+
+    %% ---------------------------
+    %% 配置与上下文加载
+    %% ---------------------------
+    B --> C1[启动时加载&lt;br/&gt;L0 平台硬底线 requirements]
+    B --> C2[启动时加载&lt;br/&gt;L1 平台默认 policy]
+    B --> C3[启动时加载&lt;br/&gt;L2 业务 / 任务 policy]
+    B --> C4[启动时加载&lt;br/&gt;任务基础上下文&lt;br/&gt;订单 / 用户 / 商家 / 历史动作 / 当前状态]
+
+    C1 --> D[主任务 orchestrator loop]
+    C2 --> D
+    C3 --> D
+    C4 --> D
+
+    %% ---------------------------
+    %% L4 实例覆盖
+    %% ---------------------------
+    E1[L4 任务实例 overrides&lt;br/&gt;创建任务时加载&lt;br/&gt;人工接手 / 打标 / 特殊确认后可更新] --> D
+    E1 --> G
+
+    %% ---------------------------
+    %% 主任务编排
+    %% ---------------------------
+    D --> F[规划 Agent&lt;br/&gt;拆本轮目标与候选动作]
+    F --> H{正向链路子 agent}
+
+    %% ---------------------------
+    %% 进入 agent 时按需加载 L3
+    %% ---------------------------
+    L3A[进入 agent 时按需加载&lt;br/&gt;L3 agent policy / spec]
+    L3B[进入 agent 时按需加载&lt;br/&gt;skills registry]
+    L3C[进入 agent 时按需加载&lt;br/&gt;playbook / handbook]
+
+    H --> M1[商家协商 Agent]
+    H --> M2[退款 Agent]
+    H --> M3[用户协商 Agent]
+    H --> M4[结果沟通 Agent]
+
+    L3A --> M1
+    L3A --> M2
+    L3A --> M3
+    L3A --> M4
+
+    L3B --> M1
+    L3B --> M2
+    L3B --> M3
+    L3B --> M4
+
+    L3C --> M1
+    L3C --> M2
+    L3C --> M3
+    L3C --> M4
+
+    M1 --> N[产出 candidate actions]
+    M2 --> N
+    M3 --> N
+    M4 --> N
+
+    %% ---------------------------
+    %% Harness Gate
+    %% ---------------------------
+    N --> G[Harness Gate 统一检查]
+
+    C1 --> G
+    C2 --> G
+    C3 --> G
+    C4 --> G
+
+    G --> G1[是否命中 L0 平台硬底线&lt;br/&gt;权限 / 去重 / 写操作记录 / 结束态禁写]
+    G --> G2[是否命中 L1/L2 运行策略与业务规则&lt;br/&gt;重试 / SLA / 夜间禁呼 / 前置条件]
+    G --> G3[当前任务实例的 L4 覆盖是否收紧执行范围]
+    G --> G4[当前 agent 的 L3 局部规则是否允许]
+    G --> G5[是否需要人工确认]
+    G --> G6[是否可直接执行 skill / tool]
+
+    %% ---------------------------
+    %% 执行 / 异常 / 搜索
+    %% ---------------------------
+    G -->|通过| P[执行对应 skill / tool]
+    P --> Q[写回 action ledger / trace / 状态]
+
+    D --> R{异常 / timeout / 信息不足?}
+    R -->|timeout / 卡死 / 失败收敛| S[异常 Agent]
+    R -->|缺事实 / 需系统外信息| T[搜索 Agent]
+
+    S --> S1[判断转人工 / 二次触发 / 改道 / 终止]
+    T --> T1[检索外部信息并总结]
+    T1 --> T2[补充事实后返回主链路]
+
+    S1 --> Q
+    T2 --> Q
+
+    %% ---------------------------
+    %% 人工接手
+    %% ---------------------------
+    G -->|需人工确认| U[人工确认 / 人工接手]
+    U --> U1[更新 L4 实例 overrides / 当前状态]
+    U1 --> E1
+    U --> Q
+
+    %% ---------------------------
+    %% 完成 / 下一轮
+    %% ---------------------------
+    Q --> V{完成?}
+    V -->|否| D
+    V -->|是| W[结束任务]
+
+    %% ---------------------------
+    %% 图例
+    %% ---------------------------
+    X[图例&lt;br/&gt;L0/L1/L2：任务启动时加载&lt;br/&gt;L3：进入对应 agent 时按需加载&lt;br/&gt;L4：任务实例创建或变更时加载&lt;br/&gt;所有层最终都在 Harness Gate 中统一生效]
+      </pre>
+    </div>
+  </div>
+
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, securityLevel: "loose" });
+  </script>
+</body>
+</html>
