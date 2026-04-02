@@ -3,194 +3,868 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ticko Harness 演示网页</title>
+<title>IM 订单级联选择器</title>
 <style>
-:root{--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--shadow:0 10px 30px rgba(15,23,42,.06);--radius:24px;--emerald-bg:#ecfdf5;--emerald-border:#a7f3d0;--emerald-text:#065f46;--sky-bg:#eff6ff;--sky-border:#bfdbfe;--sky-text:#1e3a8a;--violet-bg:#f5f3ff;--violet-border:#ddd6fe;--violet-text:#4c1d95;--rose-bg:#fff1f2;--rose-border:#fecdd3;--rose-text:#9f1239;--slate-bg:#f8fafc;--slate-border:#e2e8f0;--slate-text:#334155;--dark:#0f172a}
-*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text)}
-.wrap{max-width:1320px;margin:0 auto;padding:24px} .topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:24px}
-.pill{display:inline-flex;padding:6px 12px;border:1px solid var(--border);border-radius:999px;background:#fff;font-size:12px;color:var(--muted);margin-bottom:10px}
-h1{margin:0;font-size:48px;line-height:1.08;letter-spacing:-.02em} .sub{margin-top:12px;max-width:860px;color:var(--muted);line-height:1.8}
-.progress-card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:14px 18px;min-width:110px} .progress-card .label{font-size:12px;color:var(--muted)} .progress-card .value{font-size:24px;font-weight:700;margin-top:4px}
-.layout{display:grid;grid-template-columns:430px minmax(0,1fr);gap:24px;align-items:start} .stack{display:flex;flex-direction:column;gap:24px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px} .card-head{margin-bottom:16px} .muted{color:var(--muted)} .small{font-size:12px}
-.step-badge{display:inline-flex;padding:6px 12px;border-radius:999px;background:#f1f5f9;color:var(--muted);font-size:12px;margin-bottom:10px}
-.hero{display:flex;justify-content:space-between;gap:18px} .hero-summary{margin-top:14px;background:#f8fafc;border-radius:18px;padding:14px 16px;color:#475569;line-height:1.8}
-.btn-row{display:flex;gap:12px;flex-shrink:0}
-button{border:1px solid var(--border);background:#fff;color:#334155;border-radius:16px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;transition:.18s ease} button:hover{background:#f8fafc} button.primary{background:var(--dark);color:#fff;border-color:var(--dark)} button.primary:hover{opacity:.92} button:disabled{opacity:.4;cursor:not-allowed}
-.tree{display:flex;flex-direction:column;gap:4px} .tree-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:transparent;border-radius:14px;padding:8px 10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5} .tree-item:hover{background:#f8fafc} .tree-item.active{background:#0f172a;color:#fff} .tree-item.selected{background:#e0f2fe;color:#0c4a6e;box-shadow:inset 0 0 0 1px #bae6fd} .tree-label{min-width:0;flex:1;word-break:break-all}
-.tag{margin-left:auto;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap} .tag.active{background:rgba(52,211,153,.18);color:#d1fae5} .tag.selected{background:#bae6fd;color:#0c4a6e}
-.preview-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px} .preview-file{word-break:break-all}
-pre{margin:0;white-space:pre-wrap;word-break:break-word;overflow:auto;border-radius:18px;background:#020617;color:#e2e8f0;padding:16px;font-size:12px;line-height:1.7}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px} .load-btn{display:block;width:100%;border:1px solid var(--border);background:#f8fafc;border-radius:18px;padding:14px 16px;text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.6;overflow:hidden} .load-btn span{display:block;word-break:break-all;white-space:normal} .v-stack{display:flex;flex-direction:column;gap:12px;margin-top:16px}
-.box{border:1px solid;border-radius:18px;padding:14px 16px;line-height:1.7;font-size:14px} .box.emerald{background:var(--emerald-bg);border-color:var(--emerald-border);color:var(--emerald-text)} .box.sky{background:var(--sky-bg);border-color:var(--sky-border);color:var(--sky-text)} .box.violet{background:var(--violet-bg);border-color:var(--violet-border);color:var(--violet-text)}
-.arb-item{border-radius:18px;padding:14px 16px;border:1px solid} .arb-head{display:flex;justify-content:space-between;gap:10px;align-items:center} .arb-title{font-weight:700;font-size:14px} .arb-status{border-radius:999px;background:rgba(255,255,255,.75);padding:3px 8px;font-size:11px;font-weight:600;white-space:nowrap} .arb-detail{margin-top:6px;font-size:14px;line-height:1.7;opacity:.92} .won{background:var(--emerald-bg);border-color:var(--emerald-border);color:var(--emerald-text)} .lost{background:var(--rose-bg);border-color:var(--rose-border);color:var(--rose-text)} .pending{background:var(--slate-bg);border-color:var(--slate-border);color:var(--slate-text)} .active-status{background:var(--sky-bg);border-color:var(--sky-border);color:var(--sky-text)}
-.timeline{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px;align-items:center} .timeline-step{border-radius:16px;padding:10px 14px;font-size:14px;font-weight:600} .timeline-step.active{background:#0f172a;color:#fff} .timeline-step.done{background:#dcfce7;color:#166534} .timeline-step.todo{background:#f1f5f9;color:#64748b} .line{width:24px;height:1px;background:#cbd5e1}
-.modal{position:fixed;inset:0;background:rgba(2,6,23,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:50} .modal.show{display:flex} .modal-panel{width:min(980px,100%);max-height:85vh;background:#fff;border:1px solid var(--border);border-radius:28px;box-shadow:0 30px 60px rgba(15,23,42,.2);overflow:hidden} .modal-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:18px 20px;border-bottom:1px solid var(--border)} .modal-body{padding:20px;max-height:calc(85vh - 80px);overflow:auto}
-@media (max-width:1100px){.layout,.two-col{grid-template-columns:1fr} .hero,.topbar{flex-direction:column;align-items:stretch} h1{font-size:36px}}
+:root{
+  --bg:#f4f6fb;
+  --phone:#eef2f8;
+  --panel:#ffffff;
+  --line:#e4e9f2;
+  --text:#111827;
+  --muted:#6b7280;
+  --brand:#2f5bff;
+  --brand-soft:#eef3ff;
+  --brand-strong:#2147d8;
+  --chip:#f8fafc;
+  --shadow:0 22px 50px rgba(41,57,91,.14);
+  --radius:24px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"PingFang SC","SF Pro Display","Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(47,91,255,.08), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+  color:var(--text);
+}
+.page{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:minmax(320px, 430px) minmax(320px, 540px);
+  gap:36px;
+  align-items:center;
+  justify-content:center;
+  padding:36px 20px;
+}
+.intro{
+  align-self:start;
+  padding-top:24px;
+}
+.eyebrow{
+  display:inline-flex;
+  padding:8px 12px;
+  border:1px solid rgba(47,91,255,.15);
+  border-radius:999px;
+  background:rgba(255,255,255,.7);
+  color:var(--brand-strong);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.06em;
+}
+h1{
+  margin:18px 0 14px;
+  font-size:46px;
+  line-height:1.08;
+  letter-spacing:-.04em;
+}
+.intro p{
+  margin:0 0 20px;
+  color:#516074;
+  line-height:1.8;
+  font-size:15px;
+}
+.feature-list{
+  display:grid;
+  gap:10px;
+}
+.feature{
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(228,233,242,.9);
+  border-radius:18px;
+  padding:14px 16px;
+  box-shadow:0 12px 26px rgba(15,23,42,.05);
+}
+.feature strong{
+  display:block;
+  margin-bottom:4px;
+  font-size:14px;
+}
+.feature span{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+.phone-shell{
+  justify-self:center;
+  width:100%;
+  max-width:420px;
+  background:#dfe6f1;
+  border-radius:40px;
+  padding:14px;
+  box-shadow:0 35px 80px rgba(27,39,71,.22);
+}
+.phone{
+  position:relative;
+  height:820px;
+  background:linear-gradient(180deg, #f7f8fc 0%, #eef3f9 100%);
+  border-radius:30px;
+  overflow:hidden;
+}
+.statusbar{
+  text-align:center;
+  padding:12px 16px 6px;
+  color:#98a2b3;
+  font-size:12px;
+  font-weight:600;
+}
+.chat{
+  padding:8px 14px 140px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.msg-row{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+}
+.msg-row.self{
+  justify-content:flex-end;
+}
+.avatar{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#dbe7ff;
+  color:#4f6fe8;
+  font-size:10px;
+  flex:0 0 auto;
+}
+.bubble{
+  max-width:276px;
+  padding:12px 14px;
+  border-radius:18px;
+  font-size:13px;
+  line-height:1.55;
+  box-shadow:0 8px 20px rgba(15,23,42,.05);
+}
+.msg-row.self .bubble{
+  background:linear-gradient(135deg, #2d58f7, #3f6dff);
+  color:#fff;
+  border-bottom-right-radius:8px;
+}
+.msg-row.other .bubble{
+  background:#fff;
+  color:#334155;
+  border:1px solid #edf1f7;
+  border-bottom-left-radius:8px;
+}
+.card-prompt{
+  width:100%;
+  max-width:286px;
+  background:#fff;
+  border:1px solid #edf1f7;
+  border-radius:18px;
+  padding:14px;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.card-prompt h3{
+  margin:0;
+  font-size:14px;
+}
+.card-prompt p{
+  margin:6px 0 12px;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.6;
+}
+.entry-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:var(--brand);
+  background:var(--brand-soft);
+  border:0;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+.composer{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:12px 14px 16px;
+  background:linear-gradient(180deg, rgba(238,243,249,0) 0%, #eef3f9 28%, #eef3f9 100%);
+}
+.composer-input{
+  flex:1;
+  height:42px;
+  border:1px solid #d8dee8;
+  border-radius:999px;
+  background:#fff;
+  padding:0 16px;
+  color:#9aa4b2;
+  font-size:12px;
+  display:flex;
+  align-items:center;
+}
+.send{
+  width:38px;
+  height:38px;
+  border:0;
+  border-radius:50%;
+  background:var(--brand);
+  color:#fff;
+  font-size:14px;
+}
+.scrim{
+  position:absolute;
+  inset:0;
+  background:rgba(17,24,39,.34);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease;
+}
+.scrim.show{
+  opacity:1;
+  pointer-events:auto;
+}
+.sheet{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  transform:translateY(calc(100% + 20px));
+  transition:transform .24s ease;
+  overflow:hidden;
+}
+.sheet.show{
+  transform:translateY(0);
+}
+.sheet-header{
+  position:relative;
+  padding:14px 18px 12px;
+  text-align:center;
+  border-bottom:1px solid #eef2f7;
+}
+.sheet-header::before{
+  content:"";
+  display:block;
+  width:42px;
+  height:4px;
+  border-radius:999px;
+  background:#d6dce8;
+  margin:0 auto 10px;
+}
+.sheet-header h2{
+  margin:0;
+  font-size:15px;
+}
+.sheet-subtitle{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+.sheet-body{
+  max-height:470px;
+  overflow:auto;
+  padding:12px 14px 14px;
+}
+.section{
+  display:grid;
+  gap:10px;
+}
+.label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  color:#475569;
+  font-size:12px;
+  font-weight:700;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#64748b;
+  font-weight:600;
+}
+.order-card,.selected-card,.add-card{
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+}
+.order-head{
+  display:flex;
+  gap:10px;
+  padding:12px;
+  border-bottom:1px solid #f0f3f8;
+}
+.thumb{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  background:linear-gradient(135deg, #f2f5fb, #dfe8f8);
+  display:grid;
+  place-items:center;
+  color:#94a3b8;
+  font-size:11px;
+  font-weight:700;
+  flex:0 0 auto;
+}
+.order-meta h4,.selected-main h4,.add-card h4{
+  margin:0;
+  font-size:13px;
+  line-height:1.45;
+}
+.meta-line{
+  margin-top:4px;
+  font-size:11px;
+  color:var(--muted);
+}
+.sku-list{
+  display:grid;
+  gap:8px;
+  padding:12px;
+}
+.sku{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  align-items:center;
+  border:1px solid #e8edf6;
+  border-radius:14px;
+  padding:11px 12px;
+}
+.sku.active{
+  border-color:#8db0ff;
+  background:#f6f9ff;
+  box-shadow:inset 0 0 0 1px rgba(47,91,255,.12);
+}
+.sku-title{
+  font-size:13px;
+  font-weight:700;
+}
+.sku-desc{
+  margin-top:4px;
+  font-size:11px;
+  color:var(--muted);
+}
+.qty{
+  display:inline-flex;
+  align-items:center;
+  border:1px solid #d9e2f2;
+  border-radius:10px;
+  overflow:hidden;
+  background:#fff;
+}
+.qty button{
+  width:28px;
+  height:28px;
+  border:0;
+  background:#fff;
+  color:#4b5563;
+  font-size:15px;
+  cursor:pointer;
+}
+.qty span{
+  width:28px;
+  text-align:center;
+  font-size:12px;
+  font-weight:700;
+}
+.sheet-footer{
+  display:flex;
+  gap:10px;
+  padding:12px 14px 16px;
+  border-top:1px solid #eef2f7;
+  background:#fff;
+}
+.btn{
+  height:40px;
+  border-radius:12px;
+  border:1px solid #d7dfec;
+  background:#fff;
+  color:#475569;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+.btn.subtle{
+  flex:1;
+}
+.btn.primary{
+  flex:1.3;
+  border-color:var(--brand);
+  background:var(--brand);
+  color:#fff;
+}
+.btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.selected-card{
+  padding:12px;
+  display:grid;
+  gap:10px;
+}
+.selected-row{
+  display:flex;
+  gap:10px;
+}
+.selected-main{
+  flex:1;
+}
+.selected-line{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+}
+.add-list{
+  display:grid;
+  gap:10px;
+}
+.add-card{
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+}
+.add-card button{
+  border:0;
+  background:var(--brand-soft);
+  color:var(--brand);
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+.toolbar{
+  display:flex;
+  gap:10px;
+  margin-top:20px;
+  flex-wrap:wrap;
+}
+.toolbar button{
+  padding:11px 15px;
+  border-radius:14px;
+  border:1px solid #d8e0ec;
+  background:#fff;
+  color:#324155;
+  font-weight:700;
+  cursor:pointer;
+}
+@media (max-width:980px){
+  .page{grid-template-columns:1fr;gap:20px;padding:20px}
+  .intro{padding-top:0}
+  h1{font-size:34px}
+  .phone{height:780px}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-<div class="topbar">
-<div>
-<div class="pill">Ticko Harness 演示网页</div>
-<h1>文件职责 × L0-L4 作用域层级</h1>
-<div class="sub">左侧展示静态文件结构并支持点开查看具体配置，右侧按任务运行过程回放“加载哪些文件、这些文件产生什么效果、冲突如何裁决”。</div>
-</div>
-<div class="progress-card"><div class="label">当前回放进度</div><div class="value" id="progress"></div></div>
-</div>
-<div class="layout">
-<div class="stack">
-<div class="card"><div class="card-head"><h2>静态文件结构</h2><div class="muted">点击文件可以查看示例配置内容。</div></div><div id="tree" class="tree"></div></div>
-<div class="card"><div class="preview-head"><div><h3 style="margin:0">配置文件预览</h3><div id="selected-file" class="preview-file muted small"></div></div><button id="open-preview">放大查看</button></div><pre id="preview"></pre></div>
-</div>
-<div class="stack">
-<div class="card"><div class="hero"><div><div class="step-badge" id="step-badge"></div><h2 id="step-title" style="margin:0"></h2><p class="muted" style="margin-top:10px;font-size:18px;line-height:1.7" id="step-subtitle"></p><div class="hero-summary" id="step-summary"></div></div><div class="btn-row"><button id="prev-btn">上一步</button><button id="next-btn" class="primary">下一步</button></div></div></div>
-<div class="two-col">
-<div class="card"><h3 style="margin:0">本步加载的文件</h3><div id="loaded-files" class="v-stack"></div></div>
-<div class="card"><h3 style="margin:0">加载后产生的效果</h3><div id="highlights" class="v-stack"></div><div class="box sky" style="margin-top:12px"><strong>本步结论：</strong><span id="step-result"></span></div></div>
-</div>
-<div class="two-col">
-<div class="card"><h3 style="margin:0">当前结论</h3><div class="box violet" style="margin-top:16px" id="step-conclusion"></div></div>
-<div class="card"><h3 style="margin:0">冲突裁决链</h3><div id="arbitration" class="v-stack"></div></div>
-</div>
-<div class="card"><h3 style="margin:0">这一步在整个执行链路中的位置</h3><div class="timeline" id="timeline"></div></div>
-</div>
-</div>
-</div>
-<div class="modal" id="modal"><div class="modal-panel"><div class="modal-head"><div><div style="font-size:14px;font-weight:700">配置文件内容</div><div class="small muted" id="modal-file" style="margin-top:6px;word-break:break-all"></div></div><button id="close-modal">关闭</button></div><div class="modal-body"><pre id="modal-preview"></pre></div></div></div>
-<script>
-const fileContents = {"L0_platform_hard_limits/guardrails.yaml": "id: G-L0-001\nscope: L0\nkind: guardrails\nrules:\n  - id: G-L0-CALL-001\n    statement: \"禁止在 22:00-08:00 发起外呼\"\n    enforcement: block\n    reason: \"降低扰民与投诉风险\"\n  - id: G-L0-AUDIT-001\n    statement: \"所有写操作必须记录审计日志\"\n    enforcement: required\n  - id: G-L0-TERM-001\n    statement: \"任务进入结束态后禁止继续写操作\"\n    enforcement: block\n", "L1_platform_defaults/spec/task_spec.yaml": "id: TS-L1-001\nkind: spec\nobject: task\nfields:\n  - name: task_type\n    type: string\n  - name: input_context\n    type: object\n  - name: current_state\n    type: string\n  - name: target_outcome\n    type: string\n", "L1_platform_defaults/spec/agent_spec.yaml": "id: AS-L1-001\nkind: spec\nobject: agent\nagents:\n  - name: planner_agent\n    responsibility: \"拆解步骤与回退路径\"\n  - name: communication_agent\n    responsibility: \"联系商家或用户\"\n  - name: execution_agent\n    responsibility: \"执行退款、写回结果\"\n", "L2_biz_task/hotel_refund/spec/hotel_refund_task_spec.yaml": "id: TS-L2-HOTEL-001\nkind: spec\ntask: hotel_refund\ninput:\n  - order_id\n  - user_request\n  - current_time\noutput:\n  - refund_result\n  - contact_result\nstates:\n  - created\n  - verifying\n  - contacting_merchant\n  - refunding\n  - completed\n", "L3_agent/planner_agent/spec.yaml": "id: AS-L3-PLANNER-001\nkind: spec\nagent: planner_agent\ninput:\n  - task_context\n  - available_skills\n  - active_rules\noutput:\n  - execution_plan\n  - fallback_plan\n", "L3_agent/communication_agent/spec.yaml": "id: AS-L3-COMM-001\nkind: spec\nagent: communication_agent\ninput:\n  - contact_target\n  - preferred_channel\n  - script_template\noutput:\n  - contact_status\n  - transcript_or_receipt\n", "L3_agent/execution_agent/spec.yaml": "id: AS-L3-EXEC-001\nkind: spec\nagent: execution_agent\ninput:\n  - validated_refund_request\n  - order_snapshot\noutput:\n  - execution_result\n  - audit_record\n", "L1_platform_defaults/skills/send_im.skill.yaml": "id: SK-IM-001\nkind: skill\nname: send_im\ninput:\n  - receiver_id\n  - message_template\noutput:\n  - send_status\n  - message_id\n", "L1_platform_defaults/skills/make_call.skill.yaml": "id: SK-CALL-001\nkind: skill\nname: make_call\ninput:\n  - phone_number\n  - script\noutput:\n  - call_status\n  - transcript\npreconditions:\n  - valid_phone_number\n  - channel_enabled\n", "L1_platform_defaults/skills/send_sms.skill.yaml": "id: SK-SMS-001\nkind: skill\nname: send_sms\ninput:\n  - phone_number\n  - message_template\noutput:\n  - send_status\n  - provider_receipt\n", "L1_platform_defaults/skills/create_refund.skill.yaml": "id: SK-REFUND-001\nkind: skill\nname: create_refund\ninput:\n  - order_id\n  - refund_amount\n  - refund_reason\noutput:\n  - refund_status\n  - refund_ticket_id\n", "L2_biz_task/hotel_refund/skills/allowed_skills.yaml": "id: SKSET-L2-HOTEL-001\nkind: skills_binding\ntask: hotel_refund\nallowed_skills:\n  - send_im\n  - send_sms\n  - make_call\n  - create_refund\n  - fetch_order\n", "L1_platform_defaults/rules/channel_priority_rule.yaml": "id: R-L1-CHANNEL-001\nscope: L1\nkind: rule\nchannel_priority:\n  - im\n  - sms\n  - call\n", "L1_platform_defaults/rules/retry_rule.yaml": "id: R-L1-RETRY-001\nscope: L1\nkind: rule\nretry:\n  max_attempts: 2\n  backoff_seconds: 30\n", "L1_platform_defaults/rules/timeout_rule.yaml": "id: R-L1-TIMEOUT-001\nscope: L1\nkind: rule\ntimeout:\n  default_seconds: 120\n", "L2_biz_task/hotel_refund/rules/contact_strategy_rule.yaml": "id: R-L2-HOTEL-CONTACT-001\nscope: L2\nkind: rule\ntarget_priority:\n  - merchant\n  - user\nchannel_preference_when_contacting_merchant:\n  - im\n  - sms\n  - call\n", "L2_biz_task/hotel_refund/rules/refund_rule.yaml": "id: R-L2-HOTEL-REFUND-001\nscope: L2\nkind: rule\nrefund_decision:\n  require_merchant_confirmation: true\n  auto_refund_threshold: 0\n", "L2_biz_task/hotel_refund/rules/escalation_rule.yaml": "id: R-L2-HOTEL-ESC-001\nscope: L2\nkind: rule\nescalation:\n  if_merchant_no_response_minutes: 120\n  next_action: \"consider_call_or_manual_escalation\"\n", "L3_agent/planner_agent/rules.yaml": "id: R-L3-PLANNER-001\nscope: L3\nkind: rule\nplanning:\n  prefer_low_cost_channel_first: true\n  always_prepare_fallback_plan: true\n", "L3_agent/communication_agent/rules.yaml": "id: R-L3-COMM-001\nscope: L3\nkind: rule\ncommunication:\n  if_merchant_unresponsive_for_2h:\n    prefer_call: true\n  require_template_before_send: true\n", "L2_biz_task/hotel_refund/guardrails.yaml": "id: G-L2-HOTEL-001\nscope: L2\nkind: guardrails\nrequired_before_refund:\n  - verify_order_status\n  - verify_refund_eligibility\n", "L3_agent/communication_agent/guardrails.yaml": "id: G-L3-COMM-001\nscope: L3\nkind: guardrails\nforbidden:\n  - \"未经授权不得承诺赔付\"\n  - \"不得伪造商家已确认的事实\"\n", "L4_instances/case_20260309_001/instance_context.yaml": "id: CASE-20260309-001\nscope: L4\nkind: instance_context\ntask: hotel_refund\ncurrent_time: \"23:30\"\nuser_request: \"要求退款\"\nmerchant_contact_urgent: true\n", "L4_instances/case_20260309_001/overrides.yaml": "id: OVR-L4-001\nscope: L4\nkind: override\nflags:\n  merchant_contact_urgent: true\n  user_declined_phone: false\nnotes:\n  - \"商家需尽快确认是否同意退款\"\n", "Spec → 识别对象边界": "Spec 不是单个文件，而是一类文件：用于定义 task / agent / skill 的对象边界、输入输出和状态。", "Skills → 提供能力定义": "Skills 定义可调用能力本身，不直接决定能不能调；是否可调用由规则与 guardrails 共同裁决。", "Rules → 规划优先路径": "Rules 只在允许范围内做偏好选择，比如先联系谁、优先哪个渠道、失败后如何回退。", "Guardrails → 做强校验": "Guardrails 是硬约束规范源，负责阻止越界动作，比如夜间禁呼、终态禁写。", "Playbook → 给人解释与调优": "Playbook 不直接生效于 runtime，主要给运营、研发、排障人理解规则来源、异常原因与调参建议。"};
-const steps = [{"id": 0, "title": "收到工单", "subtitle": "用户发起酒旅退款，当前时间 23:30，需要联系商家确认是否同意退款。", "summary": "系统先拿到实例上下文，但此时还没有决定用哪个 Agent、哪个 Skill。", "loaded": ["L4_instances/case_20260309_001/instance_context.yaml"], "activeNodes": ["l4-instance"], "highlights": ["任务实例已创建", "当前时间：23:30", "目标：完成酒旅退款"], "result": "进入任务识别阶段。", "conclusion": "先识别任务实例，不做业务决策。", "arbitration": [{"label": "实例上下文", "detail": "读取 case 基本信息", "status": "active"}, {"label": "Spec / Skills / Rules / Guardrails", "detail": "尚未加载", "status": "pending"}]}, {"id": 1, "title": "加载 Spec：先识别这是什么任务", "subtitle": "系统先读取对象边界，而不是直接做动作。", "summary": "Spec 负责回答：这是什么任务、有哪些输入输出、涉及哪些 Agent。", "loaded": ["L1_platform_defaults/spec/task_spec.yaml", "L1_platform_defaults/spec/agent_spec.yaml", "L2_biz_task/hotel_refund/spec/hotel_refund_task_spec.yaml", "L3_agent/planner_agent/spec.yaml", "L3_agent/communication_agent/spec.yaml", "L3_agent/execution_agent/spec.yaml"], "activeNodes": ["l1-spec", "l2-task-spec", "l3-planner-spec", "l3-comm-spec", "l3-exec-spec"], "highlights": ["识别任务类型：hotel_refund", "识别角色：planner / communication / execution", "明确输入输出与状态流转边界"], "result": "系统知道了‘这是什么’。", "conclusion": "对象识别完成，可以进入能力装配。", "arbitration": [{"label": "L1 平台 Spec", "detail": "定义通用 task / agent 结构", "status": "won"}, {"label": "L2 任务 Spec", "detail": "将对象具体化为 hotel_refund", "status": "won"}, {"label": "L3 Agent Spec", "detail": "明确 planner / communication / execution 职责", "status": "won"}]}, {"id": 2, "title": "加载 Skills：确认有哪些能力可用", "subtitle": "先看平台有哪些基础能力，再看当前任务允许使用哪些。", "summary": "Skills 负责回答：可以调用哪些能力、这些能力的接口是什么。", "loaded": ["L1_platform_defaults/skills/send_im.skill.yaml", "L1_platform_defaults/skills/make_call.skill.yaml", "L1_platform_defaults/skills/send_sms.skill.yaml", "L1_platform_defaults/skills/create_refund.skill.yaml", "L2_biz_task/hotel_refund/skills/allowed_skills.yaml"], "activeNodes": ["l1-skills", "l2-allowed-skills"], "highlights": ["平台能力：IM / 电话 / 短信 / 退款", "任务允许能力：send_im / send_sms / make_call / create_refund / fetch_order", "此时只是确认能力池，还没决定现在用哪个"], "result": "系统知道了‘有哪些能力可用’。", "conclusion": "能力池装配完成，但‘能不能调’还要等 guardrails 裁决。", "arbitration": [{"label": "L1 平台 Skills", "detail": "注册基础能力接口", "status": "won"}, {"label": "L2 任务 allowed_skills", "detail": "筛出当前任务可见能力", "status": "won"}, {"label": "执行权限", "detail": "尚未最终裁决", "status": "pending"}]}, {"id": 3, "title": "加载 Rules：规划优先怎么做", "subtitle": "Planner 和 Communication Agent 开始做路径决策。", "summary": "Rules 负责回答：在允许范围内，优先联系谁、优先用哪个渠道、失败后怎么回退。", "loaded": ["L1_platform_defaults/rules/channel_priority_rule.yaml", "L1_platform_defaults/rules/retry_rule.yaml", "L2_biz_task/hotel_refund/rules/contact_strategy_rule.yaml", "L2_biz_task/hotel_refund/rules/refund_rule.yaml", "L2_biz_task/hotel_refund/rules/escalation_rule.yaml", "L3_agent/planner_agent/rules.yaml", "L3_agent/communication_agent/rules.yaml", "L4_instances/case_20260309_001/overrides.yaml"], "activeNodes": ["l1-rules", "l2-task-rules", "l3-planner-rules", "l3-comm-rules", "l4-overrides"], "highlights": ["L1 默认渠道优先级：IM → SMS → Call", "L2 酒旅退款优先联系商家", "L3 沟通 Agent：商家长时间未响应时可尝试电话", "L4 实例 override：merchant_contact_urgent = true"], "result": "当前得到的执行计划：优先联系商家；必要时可升级到电话。", "conclusion": "形成了一个候选方案，但还不是最终可执行方案。", "arbitration": [{"label": "L1 平台默认 Rule", "detail": "给出默认渠道优先级 IM → SMS → Call", "status": "won"}, {"label": "L2 任务 Rule", "detail": "覆盖目标优先级：先联系商家", "status": "won"}, {"label": "L3 Agent Rule", "detail": "2 小时未响应时偏向电话", "status": "won"}, {"label": "L4 Instance Override", "detail": "标记本单联系商家紧急", "status": "won"}]}, {"id": 4, "title": "准备执行 make_call 前，加载 Guardrails", "subtitle": "在真正执行动作前，必须先判断能不能做。", "summary": "Guardrails 负责回答：这个动作是否越界、是否必须拦截。", "loaded": ["L0_platform_hard_limits/guardrails.yaml", "L2_biz_task/hotel_refund/guardrails.yaml", "L3_agent/communication_agent/guardrails.yaml", "L4_instances/case_20260309_001/overrides.yaml"], "activeNodes": ["l0-guardrails", "l2-task-guardrails", "l3-comm-guardrails", "l4-overrides"], "highlights": ["L0：22:00–08:00 禁止外呼", "L0：所有写操作必须审计", "L2：退款前必须校验订单状态", "当前时间 23:30，命中夜间禁呼"], "result": "make_call 被拦截。Rule 不能突破 Guardrails。", "conclusion": "候选动作 make_call 被否决，必须回退。", "arbitration": [{"label": "候选动作", "detail": "make_call", "status": "pending"}, {"label": "L3 Agent Rule", "detail": "建议在商家长时间未响应时尝试电话", "status": "lost"}, {"label": "L4 Instance Override", "detail": "仅表明紧急，不足以突破底线", "status": "lost"}, {"label": "L0 Guardrails", "detail": "22:00–08:00 禁止外呼，最终胜出", "status": "won"}]}, {"id": 5, "title": "回退到可行方案", "subtitle": "因为电话被拦截，系统回退到下一个可执行渠道。", "summary": "当 Guardrails 拦住某个动作时，Planner 会根据 Rules 回退，而不是继续强行执行。", "loaded": ["L1_platform_defaults/rules/channel_priority_rule.yaml", "L2_biz_task/hotel_refund/rules/contact_strategy_rule.yaml"], "activeNodes": ["l1-rules", "l2-task-rules"], "highlights": ["电话不可用", "按照默认优先级回退到 IM 或 SMS", "仍然优先联系商家"], "result": "系统改用 send_im / send_sms 触达商家。", "conclusion": "最终执行的是‘被允许且优先级最高’的备选方案。", "arbitration": [{"label": "Guardrails 结果", "detail": "call 不可执行", "status": "won"}, {"label": "L1 Channel Rule", "detail": "在剩余可用渠道中优先 IM", "status": "won"}, {"label": "L2 Contact Strategy", "detail": "仍先联系商家", "status": "won"}]}, {"id": 6, "title": "用户最终应该理解到什么", "subtitle": "L0-L4 不是五种文件，而是这些文件挂载和生效的层级。", "summary": "运行时并不是‘只看一个文件’，而是按职责加载不同类型的文件，再按 L0-L4 决定哪些生效、冲突时谁优先。", "loaded": ["Spec → 识别对象边界", "Skills → 提供能力定义", "Rules → 规划优先路径", "Guardrails → 做强校验", "Playbook → 给人解释与调优"], "activeNodes": ["l0-guardrails", "l1-rules", "l1-skills", "l1-spec", "l2-task-rules", "l2-task-spec", "l3-comm-rules", "l4-overrides"], "highlights": ["按职责加载文件", "按层级判定生效范围与优先级", "Skill 定义能力；Rule 决定优先怎么用；Guardrails 决定能不能用"], "result": "这就是 Harness 的‘文件职责 × 作用域层级’二维结构。", "conclusion": "先按文件职责消费，再按 L0-L4 裁决生效与冲突优先级。", "arbitration": [{"label": "Spec", "detail": "回答这是什么", "status": "won"}, {"label": "Skills", "detail": "回答怎么调能力", "status": "won"}, {"label": "Rules", "detail": "回答优先怎么做", "status": "won"}, {"label": "Guardrails", "detail": "回答能不能做", "status": "won"}]}];
-const tree = [{"label": "ticko-harness/", "type": "folder", "path": "root", "children": [{"label": "L0_platform_hard_limits/", "type": "folder", "key": "l0-root", "path": "L0_platform_hard_limits/", "children": [{"label": "guardrails.yaml", "type": "file", "key": "l0-guardrails", "path": "L0_platform_hard_limits/guardrails.yaml"}, {"label": "spec/", "type": "folder", "path": "L0_platform_hard_limits/spec/", "children": [{"label": "action_audit_spec.yaml", "type": "file", "path": "L0_platform_hard_limits/spec/action_audit_spec.yaml"}]}, {"label": "playbook.md", "type": "file", "path": "L0_platform_hard_limits/playbook.md"}]}, {"label": "L1_platform_defaults/", "type": "folder", "key": "l1-root", "path": "L1_platform_defaults/", "children": [{"label": "rules/", "type": "folder", "key": "l1-rules", "path": "L1_platform_defaults/rules/", "children": [{"label": "retry_rule.yaml", "type": "file", "path": "L1_platform_defaults/rules/retry_rule.yaml"}, {"label": "channel_priority_rule.yaml", "type": "file", "path": "L1_platform_defaults/rules/channel_priority_rule.yaml"}, {"label": "timeout_rule.yaml", "type": "file", "path": "L1_platform_defaults/rules/timeout_rule.yaml"}]}, {"label": "skills/", "type": "folder", "key": "l1-skills", "path": "L1_platform_defaults/skills/", "children": [{"label": "send_im.skill.yaml", "type": "file", "path": "L1_platform_defaults/skills/send_im.skill.yaml"}, {"label": "make_call.skill.yaml", "type": "file", "path": "L1_platform_defaults/skills/make_call.skill.yaml"}, {"label": "send_sms.skill.yaml", "type": "file", "path": "L1_platform_defaults/skills/send_sms.skill.yaml"}, {"label": "create_refund.skill.yaml", "type": "file", "path": "L1_platform_defaults/skills/create_refund.skill.yaml"}]}, {"label": "spec/", "type": "folder", "key": "l1-spec", "path": "L1_platform_defaults/spec/", "children": [{"label": "task_spec.yaml", "type": "file", "path": "L1_platform_defaults/spec/task_spec.yaml"}, {"label": "agent_spec.yaml", "type": "file", "path": "L1_platform_defaults/spec/agent_spec.yaml"}]}, {"label": "playbook.md", "type": "file", "path": "L1_platform_defaults/playbook.md"}]}, {"label": "L2_biz_task/", "type": "folder", "key": "l2-root", "path": "L2_biz_task/", "children": [{"label": "hotel_refund/", "type": "folder", "key": "l2-task", "path": "L2_biz_task/hotel_refund/", "children": [{"label": "guardrails.yaml", "type": "file", "key": "l2-task-guardrails", "path": "L2_biz_task/hotel_refund/guardrails.yaml"}, {"label": "rules/", "type": "folder", "key": "l2-task-rules", "path": "L2_biz_task/hotel_refund/rules/", "children": [{"label": "refund_rule.yaml", "type": "file", "path": "L2_biz_task/hotel_refund/rules/refund_rule.yaml"}, {"label": "contact_strategy_rule.yaml", "type": "file", "path": "L2_biz_task/hotel_refund/rules/contact_strategy_rule.yaml"}, {"label": "escalation_rule.yaml", "type": "file", "path": "L2_biz_task/hotel_refund/rules/escalation_rule.yaml"}]}, {"label": "spec/", "type": "folder", "key": "l2-task-spec", "path": "L2_biz_task/hotel_refund/spec/", "children": [{"label": "hotel_refund_task_spec.yaml", "type": "file", "path": "L2_biz_task/hotel_refund/spec/hotel_refund_task_spec.yaml"}]}, {"label": "skills/", "type": "folder", "key": "l2-allowed-skills", "path": "L2_biz_task/hotel_refund/skills/", "children": [{"label": "allowed_skills.yaml", "type": "file", "path": "L2_biz_task/hotel_refund/skills/allowed_skills.yaml"}]}, {"label": "playbook.md", "type": "file", "path": "L2_biz_task/hotel_refund/playbook.md"}]}]}, {"label": "L3_agent/", "type": "folder", "key": "l3-root", "path": "L3_agent/", "children": [{"label": "planner_agent/", "type": "folder", "path": "L3_agent/planner_agent/", "children": [{"label": "rules.yaml", "type": "file", "key": "l3-planner-rules", "path": "L3_agent/planner_agent/rules.yaml"}, {"label": "spec.yaml", "type": "file", "key": "l3-planner-spec", "path": "L3_agent/planner_agent/spec.yaml"}, {"label": "playbook.md", "type": "file", "path": "L3_agent/planner_agent/playbook.md"}]}, {"label": "communication_agent/", "type": "folder", "path": "L3_agent/communication_agent/", "children": [{"label": "guardrails.yaml", "type": "file", "key": "l3-comm-guardrails", "path": "L3_agent/communication_agent/guardrails.yaml"}, {"label": "rules.yaml", "type": "file", "key": "l3-comm-rules", "path": "L3_agent/communication_agent/rules.yaml"}, {"label": "spec.yaml", "type": "file", "key": "l3-comm-spec", "path": "L3_agent/communication_agent/spec.yaml"}, {"label": "playbook.md", "type": "file", "path": "L3_agent/communication_agent/playbook.md"}]}, {"label": "execution_agent/", "type": "folder", "path": "L3_agent/execution_agent/", "children": [{"label": "guardrails.yaml", "type": "file", "path": "L3_agent/execution_agent/guardrails.yaml"}, {"label": "rules.yaml", "type": "file", "key": "l3-exec-rules", "path": "L3_agent/execution_agent/rules.yaml"}, {"label": "spec.yaml", "type": "file", "key": "l3-exec-spec", "path": "L3_agent/execution_agent/spec.yaml"}, {"label": "playbook.md", "type": "file", "path": "L3_agent/execution_agent/playbook.md"}]}]}, {"label": "L4_instances/", "type": "folder", "key": "l4-root", "path": "L4_instances/", "children": [{"label": "case_20260309_001/", "type": "folder", "key": "l4-instance", "path": "L4_instances/case_20260309_001/", "children": [{"label": "instance_context.yaml", "type": "file", "path": "L4_instances/case_20260309_001/instance_context.yaml"}, {"label": "overrides.yaml", "type": "file", "key": "l4-overrides", "path": "L4_instances/case_20260309_001/overrides.yaml"}, {"label": "operator_note.md", "type": "file", "path": "L4_instances/case_20260309_001/operator_note.md"}]}]}]}];
-const timelineLabels = ["收到工单","加载 Spec","加载 Skills","加载 Rules","加载 Guardrails","执行 / 回退","总结理解"];
-const statusLabels = {won:"生效 / 胜出",lost:"被覆盖 / 被否决",active:"当前焦点",pending:"待裁决"};
-let stepIndex = 0;
-let selectedFile = "L0_platform_hard_limits/guardrails.yaml";
+<div class="page">
+  <section class="intro">
+    <div class="eyebrow">IM Window Selector</div>
+    <h1>级联选订单的 IM 侧滑选择器</h1>
+    <p>这个原型复现了你图里的核心链路：在 IM 会话中触发退款项选择器，先选同一订单下的商品与数量，再汇总成已选状态，并支持继续添加其他订单。</p>
+    <div class="feature-list">
+      <div class="feature"><strong>弹出式工具</strong><span>以聊天窗口底部浮层方式出现，不打断当前会话上下文。</span></div>
+      <div class="feature"><strong>订单级联</strong><span>先选择订单，再选择 SKU 和数量；跨订单时进入“添加更多订单”流程。</span></div>
+      <div class="feature"><strong>结果回填</strong><span>确认后把已选内容回写到聊天区，方便继续走退款申请或客服处理。</span></div>
+    </div>
+    <div class="toolbar">
+      <button id="open-entry">打开选择器</button>
+      <button id="open-summary">查看已选状态</button>
+      <button id="reset-demo">重置演示</button>
+    </div>
+  </section>
 
-const el = id => document.getElementById(id);
-function selectedContent() {
-  return fileContents[selectedFile] || `# ${selectedFile}\n\n这个文件的示例内容还没有填充。`;
+  <section class="phone-shell">
+    <div class="phone">
+      <div class="statusbar">9:41</div>
+      <div class="chat" id="chat-list"></div>
+      <div class="composer">
+        <div class="composer-input">请输入想咨询的问题…</div>
+        <button class="send">➤</button>
+      </div>
+
+      <div class="scrim" id="scrim"></div>
+
+      <div class="sheet" id="sheet">
+        <div class="sheet-header">
+          <h2 id="sheet-title">选择退款项目</h2>
+          <p class="sheet-subtitle" id="sheet-subtitle"></p>
+        </div>
+        <div class="sheet-body" id="sheet-body"></div>
+        <div class="sheet-footer" id="sheet-footer"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const orders = [
+  {
+    id: "A1001",
+    shop: "希尔顿酒店（三亚湾美高梅）",
+    time: "2025-10-12 13:00",
+    summary: "酒店预订",
+    items: [
+      { id: "A1001-1", title: "10月12日（周六）", desc: "豪华大床房 | 含早 | 2间 1晚", price: 1200, max: 2 },
+      { id: "A1001-2", title: "10月13日（周日）", desc: "豪华大床房 | 含早 | 2间 1晚", price: 1200, max: 1 }
+    ]
+  },
+  {
+    id: "B2048",
+    shop: "上海迪士尼乐园",
+    time: "2025-10-05 09:00",
+    summary: "乐园门票",
+    items: [
+      { id: "B2048-1", title: "成人票", desc: "单日票 | 2张", price: 499, max: 2 }
+    ]
+  },
+  {
+    id: "C3302",
+    shop: "奔跑松水镇（100元代金券）",
+    time: "2025-10-08 18:00",
+    summary: "餐饮代金券",
+    items: [
+      { id: "C3302-1", title: "代金券", desc: "面额100元 | 1张", price: 100, max: 1 }
+    ]
+  }
+];
+
+const baseMessages = [
+  { role: "self", text: "你好，我想退一单，看看存不存在问题？" },
+  { role: "other", text: "好的，您想退哪一笔？请点击卡片选择您想要申请退款的订单。", card: true }
+];
+
+const state = {
+  view: "closed",
+  activeOrderId: orders[0].id,
+  selections: {}
+};
+
+const chatList = document.getElementById("chat-list");
+const sheet = document.getElementById("sheet");
+const scrim = document.getElementById("scrim");
+const sheetTitle = document.getElementById("sheet-title");
+const sheetSubtitle = document.getElementById("sheet-subtitle");
+const sheetBody = document.getElementById("sheet-body");
+const sheetFooter = document.getElementById("sheet-footer");
+
+function formatPrice(value) {
+  return "¥" + value.toLocaleString("zh-CN");
 }
-function openPreview(path) {
-  if (!path) return;
-  selectedFile = path;
-  renderPreview();
-  el("modal-file").textContent = selectedFile;
-  el("modal-preview").textContent = selectedContent();
-  el("modal").classList.add("show");
+
+function getOrder(orderId) {
+  return orders.find(order => order.id === orderId);
 }
-function closePreview() {
-  el("modal").classList.remove("show");
+
+function selectedEntries() {
+  const result = [];
+  Object.entries(state.selections).forEach(([orderId, map]) => {
+    const order = getOrder(orderId);
+    if (!order) return;
+    order.items.forEach(item => {
+      const qty = map[item.id] || 0;
+      if (qty > 0) result.push({ order, item, qty });
+    });
+  });
+  return result;
 }
-function renderTree() {
-  const container = el("tree");
-  container.innerHTML = "";
-  const activeKeys = steps[stepIndex].activeNodes;
-  function walk(nodes, depth) {
-    nodes.forEach(node => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "tree-item";
-      if (node.key && activeKeys.includes(node.key)) btn.classList.add("active");
-      if (node.type !== "folder" && node.path === selectedFile) btn.classList.add("selected");
-      btn.style.marginLeft = `${depth * 14}px`;
-      btn.innerHTML = `<span>${node.type === "folder" ? "📁" : "📄"}</span><span class="tree-label">${node.label}</span>`;
-      if (node.type !== "folder" && node.path === selectedFile) {
-        const tag = document.createElement("span");
-        tag.className = "tag selected";
-        tag.textContent = "查看中";
-        btn.appendChild(tag);
-      } else if (node.key && activeKeys.includes(node.key)) {
-        const tag = document.createElement("span");
-        tag.className = "tag active";
-        tag.textContent = "已加载/生效";
-        btn.appendChild(tag);
-      }
-      if (node.type !== "folder" && node.path) {
-        btn.addEventListener("click", () => {
-          selectedFile = node.path;
-          renderPreview();
-          openPreview(node.path);
-        });
-      } else {
-        btn.disabled = true;
-        btn.style.cursor = "default";
-      }
-      container.appendChild(btn);
-      if (node.children?.length) walk(node.children, depth + 1);
+
+function selectedCount() {
+  return selectedEntries().reduce((sum, entry) => sum + entry.qty, 0);
+}
+
+function selectedOrderIds() {
+  return [...new Set(selectedEntries().map(entry => entry.order.id))];
+}
+
+function renderChat() {
+  chatList.innerHTML = "";
+  const selected = selectedEntries();
+  const messages = [...baseMessages];
+  if (selected.length) {
+    const orderCount = selectedOrderIds().length;
+    messages.push({
+      role: "other",
+      selectedCard: true,
+      title: "已选退款项目",
+      subtitle: orderCount + " 笔订单"
+    });
+    messages.push({
+      role: "self",
+      text: `我选好了，${selectedCount()} 件，已提交申请。`
+    });
+    messages.push({
+      role: "other",
+      text: "收到，正在为您处理退款申请。"
     });
   }
-  walk(tree, 0);
-}
-function renderPreview() {
-  el("selected-file").textContent = `当前查看：${selectedFile}`;
-  el("preview").textContent = selectedContent();
-}
-function renderStep() {
-  const step = steps[stepIndex];
-  el("progress").textContent = `${stepIndex + 1} / ${steps.length}`;
-  el("step-badge").textContent = `Step ${stepIndex + 1}`;
-  el("step-title").textContent = step.title;
-  el("step-subtitle").textContent = step.subtitle;
-  el("step-summary").textContent = step.summary;
-  el("step-result").textContent = step.result;
-  el("step-conclusion").textContent = step.conclusion;
-  el("prev-btn").disabled = stepIndex === 0;
-  el("next-btn").disabled = stepIndex === steps.length - 1;
 
-  const loaded = el("loaded-files");
-  loaded.innerHTML = "";
-  step.loaded.forEach(item => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "load-btn";
-    btn.innerHTML = `<span>${item}</span>`;
-    if (fileContents[item]) btn.addEventListener("click", () => { selectedFile = item; renderPreview(); openPreview(item); renderTree(); });
-    loaded.appendChild(btn);
-  });
+  messages.forEach(message => {
+    const row = document.createElement("div");
+    row.className = "msg-row " + message.role;
 
-  const hi = el("highlights");
-  hi.innerHTML = "";
-  step.highlights.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "box emerald";
-    div.textContent = item;
-    hi.appendChild(div);
-  });
-
-  const arb = el("arbitration");
-  arb.innerHTML = "";
-  step.arbitration.forEach(item => {
-    const div = document.createElement("div");
-    div.className = `arb-item ${item.status === "active" ? "active-status" : item.status}`;
-    div.innerHTML = `<div class="arb-head"><div class="arb-title">${item.label}</div><div class="arb-status">${statusLabels[item.status]}</div></div><div class="arb-detail">${item.detail}</div>`;
-    arb.appendChild(div);
-  });
-
-  const timeline = el("timeline");
-  timeline.innerHTML = "";
-  timelineLabels.forEach((label, idx) => {
-    const stepDiv = document.createElement("div");
-    stepDiv.className = `timeline-step ${idx === stepIndex ? "active" : idx < stepIndex ? "done" : "todo"}`;
-    stepDiv.textContent = label;
-    timeline.appendChild(stepDiv);
-    if (idx < timelineLabels.length - 1) {
-      const line = document.createElement("div");
-      line.className = "line";
-      timeline.appendChild(line);
+    if (message.role === "other") {
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = "AI";
+      row.appendChild(avatar);
     }
+
+    if (message.card) {
+      const card = document.createElement("div");
+      card.className = "card-prompt";
+      card.innerHTML = '<h3>退款申请</h3><p>可对订单里的商品或房晚进行选择，支持后续继续添加其他订单。</p>';
+      const btn = document.createElement("button");
+      btn.className = "entry-link";
+      btn.textContent = "去选择退款项目";
+      btn.addEventListener("click", () => openSelector("items", orders[0].id));
+      card.appendChild(btn);
+      row.appendChild(card);
+    } else if (message.selectedCard) {
+      const card = document.createElement("div");
+      card.className = "card-prompt";
+      card.innerHTML = `<h3>${message.title}</h3><p>${message.subtitle}</p>`;
+      selected.forEach(entry => {
+        const line = document.createElement("div");
+        line.style.fontSize = "12px";
+        line.style.color = "#475569";
+        line.style.marginTop = "8px";
+        line.textContent = `${entry.order.shop} / ${entry.item.title} × ${entry.qty}`;
+        card.appendChild(line);
+      });
+      row.appendChild(card);
+    } else {
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = message.text;
+      row.appendChild(bubble);
+    }
+
+    chatList.appendChild(row);
+  });
+}
+
+function ensureOrderSelection(orderId) {
+  if (!state.selections[orderId]) state.selections[orderId] = {};
+}
+
+function updateQty(orderId, itemId, diff) {
+  const order = getOrder(orderId);
+  if (!order) return;
+  const item = order.items.find(entry => entry.id === itemId);
+  ensureOrderSelection(orderId);
+  const current = state.selections[orderId][itemId] || 0;
+  const next = Math.max(0, Math.min(item.max, current + diff));
+  state.selections[orderId][itemId] = next;
+  if (!Object.values(state.selections[orderId]).some(Boolean)) delete state.selections[orderId];
+  renderSheet();
+}
+
+function clearCurrentOrder() {
+  delete state.selections[state.activeOrderId];
+  renderSheet();
+}
+
+function openSelector(view, orderId) {
+  state.view = view;
+  state.activeOrderId = orderId || state.activeOrderId;
+  sheet.classList.add("show");
+  scrim.classList.add("show");
+  renderSheet();
+}
+
+function closeSelector() {
+  state.view = "closed";
+  sheet.classList.remove("show");
+  scrim.classList.remove("show");
+}
+
+function renderItemsView() {
+  const order = getOrder(state.activeOrderId);
+  const picked = state.selections[order.id] || {};
+  const count = Object.values(picked).reduce((sum, qty) => sum + qty, 0);
+  sheetTitle.textContent = "选择退款项目";
+  sheetSubtitle.textContent = "选择当前订单中的商品或房晚";
+  sheetBody.innerHTML = `
+    <div class="section">
+      <div class="label"><span>请选择您要退款的订单</span><span class="badge">${order.id}</span></div>
+      <div class="order-card">
+        <div class="order-head">
+          <div class="thumb">图片</div>
+          <div class="order-meta">
+            <h4>${order.shop}</h4>
+            <div class="meta-line">${order.time}</div>
+            <div class="meta-line">${order.summary}</div>
+          </div>
+        </div>
+        <div class="sku-list" id="sku-list"></div>
+      </div>
+    </div>
+  `;
+
+  const skuList = document.getElementById("sku-list");
+  order.items.forEach(item => {
+    const qty = picked[item.id] || 0;
+    const row = document.createElement("div");
+    row.className = "sku" + (qty > 0 ? " active" : "");
+    row.innerHTML = `
+      <div>
+        <div class="sku-title">${item.title}</div>
+        <div class="sku-desc">${item.desc}</div>
+        <div class="sku-desc">${formatPrice(item.price)}</div>
+      </div>
+      <div class="qty">
+        <button type="button" data-op="-">-</button>
+        <span>${qty}</span>
+        <button type="button" data-op="+">+</button>
+      </div>
+    `;
+    row.querySelectorAll("button").forEach(button => {
+      button.addEventListener("click", () => updateQty(order.id, item.id, button.dataset.op === "+" ? 1 : -1));
+    });
+    skuList.appendChild(row);
   });
 
-  renderTree();
+  sheetFooter.innerHTML = "";
+  const resetBtn = document.createElement("button");
+  resetBtn.className = "btn subtle";
+  resetBtn.textContent = "清空重选";
+  resetBtn.addEventListener("click", clearCurrentOrder);
+
+  const confirmBtn = document.createElement("button");
+  confirmBtn.className = "btn primary";
+  confirmBtn.textContent = "确认选择";
+  confirmBtn.disabled = count === 0;
+  confirmBtn.addEventListener("click", () => openSelector("summary", state.activeOrderId));
+
+  sheetFooter.append(resetBtn, confirmBtn);
 }
-el("prev-btn").addEventListener("click", () => { if (stepIndex > 0) { stepIndex -= 1; renderStep(); } });
-el("next-btn").addEventListener("click", () => { if (stepIndex < steps.length - 1) { stepIndex += 1; renderStep(); } });
-el("open-preview").addEventListener("click", () => openPreview(selectedFile));
-el("close-modal").addEventListener("click", closePreview);
-el("modal").addEventListener("click", e => { if (e.target === el("modal")) closePreview(); });
-renderPreview();
-renderStep();
+
+function renderSummaryView() {
+  const entries = selectedEntries();
+  sheetTitle.textContent = "选择退款项目";
+  sheetSubtitle.textContent = "已选退款内容";
+  sheetBody.innerHTML = `
+    <div class="section">
+      <div class="label"><span>已选退款内容</span><span class="badge">${selectedOrderIds().length} 笔订单</span></div>
+      <div class="selected-card" id="selected-list"></div>
+      <button class="btn subtle" id="more-order-btn" style="width:100%">+ 新增退款订单</button>
+    </div>
+  `;
+
+  const list = document.getElementById("selected-list");
+  entries.forEach(entry => {
+    const card = document.createElement("div");
+    card.className = "selected-row";
+    card.innerHTML = `
+      <div class="thumb">订单</div>
+      <div class="selected-main">
+        <h4>${entry.order.shop}</h4>
+        <div class="selected-line">${entry.item.title} / ${entry.item.desc}</div>
+        <div class="selected-line">${entry.order.time}　× ${entry.qty}</div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  document.getElementById("more-order-btn").addEventListener("click", () => openSelector("add", state.activeOrderId));
+
+  sheetFooter.innerHTML = "";
+  const backBtn = document.createElement("button");
+  backBtn.className = "btn subtle";
+  backBtn.textContent = "返回修改";
+  backBtn.addEventListener("click", () => openSelector("items", state.activeOrderId));
+
+  const submitBtn = document.createElement("button");
+  submitBtn.className = "btn primary";
+  submitBtn.textContent = "确认选择";
+  submitBtn.addEventListener("click", () => {
+    closeSelector();
+    renderChat();
+  });
+
+  sheetFooter.append(backBtn, submitBtn);
+}
+
+function renderAddView() {
+  const pickedOrderIds = new Set(selectedOrderIds());
+  const candidates = orders.filter(order => !pickedOrderIds.has(order.id));
+  sheetTitle.textContent = "添加更多订单";
+  sheetSubtitle.textContent = "继续选择其他可退款订单";
+  sheetBody.innerHTML = `
+    <div class="section">
+      <div class="add-list" id="add-list"></div>
+    </div>
+  `;
+
+  const list = document.getElementById("add-list");
+  candidates.forEach(order => {
+    const card = document.createElement("div");
+    card.className = "add-card";
+    card.innerHTML = `
+      <div>
+        <h4>${order.shop}</h4>
+        <div class="meta-line">${order.time}</div>
+        <div class="meta-line">${order.summary}</div>
+      </div>
+      <button type="button">添加</button>
+    `;
+    card.querySelector("button").addEventListener("click", () => openSelector("items", order.id));
+    list.appendChild(card);
+  });
+
+  if (!candidates.length) {
+    list.innerHTML = '<div class="selected-card"><div class="meta-line">没有更多可添加的订单了。</div></div>';
+  }
+
+  sheetFooter.innerHTML = "";
+  const backBtn = document.createElement("button");
+  backBtn.className = "btn subtle";
+  backBtn.textContent = "返回";
+  backBtn.addEventListener("click", () => openSelector("summary", state.activeOrderId));
+
+  const doneBtn = document.createElement("button");
+  doneBtn.className = "btn primary";
+  doneBtn.textContent = "完成";
+  doneBtn.addEventListener("click", () => openSelector("summary", state.activeOrderId));
+
+  sheetFooter.append(backBtn, doneBtn);
+}
+
+function renderSheet() {
+  if (state.view === "items") renderItemsView();
+  if (state.view === "summary") renderSummaryView();
+  if (state.view === "add") renderAddView();
+}
+
+document.getElementById("open-entry").addEventListener("click", () => openSelector("items", orders[0].id));
+document.getElementById("open-summary").addEventListener("click", () => {
+  if (!selectedEntries().length) {
+    state.selections = { [orders[0].id]: { [orders[0].items[0].id]: 1 } };
+    renderChat();
+  }
+  openSelector("summary", selectedOrderIds()[0] || orders[0].id);
+});
+document.getElementById("reset-demo").addEventListener("click", () => {
+  state.selections = {};
+  closeSelector();
+  renderChat();
+});
+scrim.addEventListener("click", closeSelector);
+
+renderChat();
 </script>
 </body>
 </html>
